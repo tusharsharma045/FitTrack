@@ -12,9 +12,9 @@ async function run() {
     console.log('--------------------------------------------------');
 
     const host = process.env.DB_HOST || 'localhost';
-    const user = process.env.DB_USER || 'root';
-    const password = process.env.DB_PASSWORD || 'root';
-    const port = process.env.DB_PORT || 3306;
+    const user = process.env.DB_PORT === '3307' ? 'root' : (process.env.DB_USER || 'root');
+    const password = process.env.DB_PORT === '3307' ? 'rootpassword' : (process.env.DB_PASSWORD || 'root');
+    const port = Number(process.env.DB_PORT) || 3307;
 
     console.log(`Connecting to MySQL server at ${host}:${port} as ${user}...`);
 

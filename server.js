@@ -94,15 +94,17 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
     
     // Verify DB Connection
     let dbStatus = `MySQL 8 Connected (${DB_NAME})`;
+    let portType = db.activePort === 3307 ? 'Docker MySQL (port 3307)' : 'Native Local MySQL (port 3306)';
     try {
         const conn = await db.getConnection();
         conn.release();
+        dbStatus = `MySQL 8 Connected: ${portType}`;
     } catch (e) {
         dbStatus = `MySQL Connection Warning: ${e.message}`;
     }
 
     console.log('\n  \x1b[1m\x1b[32mFITTRACK GYM MANAGEMENT & FITNESS TRACKING SYSTEM\x1b[0m');
-    console.log(`  \x1b[90m${dbStatus} at ${DB_HOST}:${DB_PORT}\x1b[0m\n`);
+    console.log(`  \x1b[90m${dbStatus}\x1b[0m\n`);
     console.log(`  \x1b[1m➜\x1b[0m  \x1b[1mLocal:\x1b[0m    \x1b[36mhttp://localhost:${PORT}/\x1b[0m`);
     console.log(`  \x1b[1m➜\x1b[0m  \x1b[1mNetwork:\x1b[0m  \x1b[36mhttp://${localIP}:${PORT}/\x1b[0m\n`);
 });

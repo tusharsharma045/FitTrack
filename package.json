@@ -5,6 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch server.js",
+    "dev:docker": "DB_PORT=3307 node --watch server.js",
+    "dev:local": "DB_PORT=3306 node --watch server.js",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
     "start": "node server.js",
     "init-db": "node database/init_db.js",
     "test": "node database/init_db.js"

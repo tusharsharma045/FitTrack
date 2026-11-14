@@ -1,0 +1,42 @@
+services:
+  mysql_db:
+    image: mysql:latest
+    container_name: fittrack_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fittrack_db
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql123
+    ports:
+      - "3308:3306"
+    volumes:
+      - fittrack_mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seeds.sql:/docker-entrypoint-initdb.d/02-seeds.sql:ro
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "8007:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql_db
+    depends_on:
+      - mysql_db
+
+  app:
+    build: .
+    container_name: fittrack_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: "mysql://mysql:mysql123@mysql_db:3306/fittrack_db"
+    depends_on:
+      - mysql_db
+
+volumes:
+  fittrack_mysql_data:
+    driver: local
