@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack – Smart Gym Management & Fitness Tracking System</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-text">
+                    <h2>Fit<span>Track</span></h2>
+                    <p>Smart Gym & DBMS</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">CORE OPERATIONS</div>
+                <button class="nav-item active" data-tab="overview">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" data-tab="members">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Members</span>
+                </button>
+                <button class="nav-item" data-tab="trainers">
+                    <i class="fa-solid fa-user-ninja"></i>
+                    <span>Trainers & Coaches</span>
+                </button>
+                <button class="nav-item" data-tab="memberships">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>Plans & Subscriptions</span>
+                </button>
+                <button class="nav-item" data-tab="attendance">
+                    <i class="fa-solid fa-clipboard-user"></i>
+                    <span>Attendance Terminal</span>
+                </button>
+                
+                <div class="nav-section-title">FITNESS & ASSETS</div>
+                <button class="nav-item" data-tab="workouts">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <span>Workouts & Exercises</span>
+                </button>
+                <button class="nav-item" data-tab="progress">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Fitness Progress</span>
+                </button>
+                <button class="nav-item" data-tab="equipment">
+                    <i class="fa-solid fa-weight-hanging"></i>
+                    <span>Equipment Inventory</span>
+                </button>
+                <button class="nav-item" data-tab="payments">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Payments & Billing</span>
+                </button>
+
+                <div class="nav-section-title">ANALYTICS & CAPSTONE</div>
+                <button class="nav-item" data-tab="reports">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Advanced Reports</span>
+                </button>
+                <button class="nav-item highlight-nav" data-tab="dbms-showcase">
+                    <i class="fa-solid fa-database"></i>
+                    <span>DBMS Showcase & SQL</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="db-pill">
+                    <span class="db-dot"></span>
+                    <span>MySQL 8.4 Connected</span>
+                </div>
+                <p class="capstone-tag">Capstone DBMS Project</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <!-- TOP BAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-toggle" id="mobileMenuBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="page-title-wrap">
+                        <h1 id="pageTitle">Gym Operations Overview</h1>
+                        <p id="pageSubtitle">Real-time statistics, member analytics, and operational metrics.</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="date-badge" id="currentDateDisplay">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <span>Today</span>
+                    </div>
+                    <button class="btn btn-primary" id="topRegisterBtn">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Register Member</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- NOTIFICATION TOAST -->
+            <div id="toastContainer" class="toast-container"></div>
+
+            <!-- TABS CONTAINER -->
+            <div class="content-body">
+
+                <!-- TAB 1: OVERVIEW -->
+                <section class="tab-pane active" id="pane-overview">
+                    <!-- Metric Cards Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon c-blue">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Total Members</span>
+                                <h3 class="metric-value" id="statTotalMembers">-</h3>
+                                <span class="metric-trend text-muted"><i class="fa-solid fa-circle-check text-success"></i> Registered in Gym</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon c-green">
+                                <i class="fa-solid fa-id-card-clip"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Active Memberships</span>
+                                <h3 class="metric-value" id="statActiveMemberships">-</h3>
+                                <span class="metric-trend text-success"><i class="fa-solid fa-check"></i> Currently Valid</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon c-red">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Expired Plans</span>
+                                <h3 class="metric-value" id="statExpiredMemberships">-</h3>
+                                <span class="metric-trend text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Action Required</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon c-cyan">
+                                <i class="fa-solid fa-user-ninja"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Certified Trainers</span>
+                                <h3 class="metric-value" id="statTotalTrainers">-</h3>
+                                <span class="metric-trend text-muted"><i class="fa-solid fa-dumbbell"></i> Coaches Active</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon c-purple">
+                                <i class="fa-solid fa-clipboard-check"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Today's Attendance</span>
+                                <h3 class="metric-value" id="statTodayAttendance">-</h3>
+                                <span class="metric-trend text-muted"><i class="fa-solid fa-person-walking"></i> Check-ins logged</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon c-emerald">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Monthly Revenue</span>
+                                <h3 class="metric-value" id="statMonthlyRevenue">₹0</h3>
+                                <span class="metric-trend text-success"><i class="fa-solid fa-arrow-trend-up"></i> Current Month</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon c-amber">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-label">Pending Payments</span>
+                                <h3 class="metric-value" id="statPendingPayments">₹0</h3>
+                                <span class="metric-trend text-warning" id="statPendingCount">0 invoices</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-chart-line text-emerald"></i>
+                                    <h3>Monthly Gym Revenue Trends</h3>
+                                </div>
+                                <span class="badge badge-emerald">Last 6 Months</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="canvas-wrap">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-chart-pie text-cyan"></i>
+                                    <h3>Membership Plan Popularity</h3>
+                                </div>
+                                <span class="badge badge-cyan">Plan Share</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="canvas-wrap">
+                                    <canvas id="planChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-calendar-days text-purple"></i>
+                                    <h3>7-Day Attendance Activity</h3>
+                                </div>
+                                <span class="badge badge-purple">Daily Visits</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="canvas-wrap">
+                                    <canvas id="attendanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-screwdriver-wrench text-amber"></i>
+                                    <h3>Equipment Health Distribution</h3>
+                                </div>
+                                <span class="badge badge-amber">Assets</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="canvas-wrap">
+                                    <canvas id="equipmentChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts & Quick Action Panels -->
+                    <div class="split-grid">
+                        <!-- Upcoming Expirations -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                    <h3>Upcoming Membership Expirations</h3>
+                                </div>
+                                <span class="badge badge-warning">Next 10 Days</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Member</th>
+                                                <th>Plan</th>
+                                                <th>End Date</th>
+                                                <th>Remaining</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="upcomingExpirationsBody">
+                                            <tr><td colspan="5" class="text-center">Loading alerts...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Attendance Terminal Panel -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-bolt text-cyan"></i>
+                                    <h3>Instant Smart Check-in / Out</h3>
+                                </div>
+                                <span class="badge badge-cyan">Stored Procedure Driven</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">Uses <code>sp_record_attendance</code> to automatically validate active membership, toggling check-in or check-out.</p>
+                                <form id="quickAttendanceForm" class="flex-form">
+                                    <div class="form-group flex-1">
+                                        <label>Select Member</label>
+                                        <select id="quickAttendanceMemberSelect" class="form-control" required>
+                                            <option value="">-- Choose Member --</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="margin-top: 24px;">
+                                        <i class="fa-solid fa-right-to-bracket"></i> Check-in / Check-out
+                                    </button>
+                                </form>
+                                <div id="quickAttendanceResult" class="mt-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: MEMBERS -->
+                <section class="tab-pane" id="pane-members">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="memberSearchInput" placeholder="Search by name, email, phone...">
+                            </div>
+                            <select id="memberStatusFilter" class="form-control filter-select">
+                                <option value="All">All Statuses</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-primary" id="openAddMemberModalBtn">
+                                <i class="fa-solid fa-user-plus"></i> Add New Member
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Member Name</th>
+                                            <th>Contact</th>
+                                            <th>Gender</th>
+                                            <th>Active Plan</th>
+                                            <th>Days Left</th>
+                                            <th>Assigned Trainer</th>
+                                            <th>Status</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="membersTableBody">
+                                        <tr><td colspan="9" class="text-center">Loading members...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: TRAINERS -->
+                <section class="tab-pane" id="pane-trainers">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <h3>Personal Trainers & Instructors</h3>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-secondary" id="openAssignTrainerModalBtn">
+                                <i class="fa-solid fa-link"></i> Assign Trainer
+                            </button>
+                            <button class="btn btn-primary" id="openAddTrainerModalBtn">
+                                <i class="fa-solid fa-user-plus"></i> Add New Trainer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="trainer-cards-grid" id="trainerCardsContainer">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-clipboard-list text-cyan"></i>
+                                <h3>Active Trainer Assignments</h3>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Assignment ID</th>
+                                            <th>Member</th>
+                                            <th>Trainer</th>
+                                            <th>Specialization</th>
+                                            <th>Session Schedule</th>
+                                            <th>Assigned Date</th>
+                                            <th>Status</th>
+                                            <th class="text-right">Toggle</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="trainerAssignmentsTableBody">
+                                        <tr><td colspan="8" class="text-center">Loading assignments...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: MEMBERSHIPS & PLANS -->
+                <section class="tab-pane" id="pane-memberships">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <h3>Membership Packages & Subscriptions</h3>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-secondary" id="openRenewModalBtn">
+                                <i class="fa-solid fa-arrows-rotate"></i> Renew Membership
+                            </button>
+                            <button class="btn btn-primary" id="openAddPlanModalBtn">
+                                <i class="fa-solid fa-plus"></i> Create New Plan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Plans catalog cards -->
+                    <div class="plans-grid" id="plansCardsContainer">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-list-check text-emerald"></i>
+                                <h3>Member Subscriptions History</h3>
+                            </div>
+                            <select id="membershipStatusFilter" class="form-control filter-select">
+                                <option value="All">All Statuses</option>
+                                <option value="Active">Active</option>
+                                <option value="Expired">Expired</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Member</th>
+                                            <th>Plan Name</th>
+                                            <th>Duration</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th class="text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="membershipsTableBody">
+                                        <tr><td colspan="9" class="text-center">Loading subscriptions...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: ATTENDANCE TERMINAL -->
+                <section class="tab-pane" id="pane-attendance">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <div class="form-group mb-0" style="margin-right: 12px;">
+                                <input type="date" id="attendanceDateFilter" class="form-control">
+                            </div>
+                            <button class="btn btn-secondary" id="resetAttendanceDateBtn">Today</button>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-primary" id="openManualAttendanceModalBtn">
+                                <i class="fa-solid fa-plus"></i> Manual Entry
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Member Name</th>
+                                            <th>Phone</th>
+                                            <th>Date</th>
+                                            <th>Check-In</th>
+                                            <th>Check-Out</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attendanceTableBody">
+                                        <tr><td colspan="8" class="text-center">Loading attendance logs...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: WORKOUTS & EXERCISES -->
+                <section class="tab-pane" id="pane-workouts">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <h3>Workout Plans & Exercise Bank</h3>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-secondary" id="openAddExerciseModalBtn">
+                                <i class="fa-solid fa-dumbbell"></i> New Exercise
+                            </button>
+                            <button class="btn btn-primary" id="openCreateWorkoutPlanModalBtn">
+                                <i class="fa-solid fa-plus"></i> Create Workout Plan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="workout-plans-grid" id="workoutPlansContainer">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Exercises Repository Table -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-list text-cyan"></i>
+                                <h3>Exercise Master Repository</h3>
+                            </div>
+                            <div class="flex gap-2">
+                                <select id="exerciseMuscleFilter" class="form-control filter-select">
+                                    <option value="All">All Muscle Groups</option>
+                                    <option value="Quadriceps & Glutes">Quadriceps & Glutes</option>
+                                    <option value="Chest & Triceps">Chest & Triceps</option>
+                                    <option value="Hamstrings & Posterior Chain">Hamstrings</option>
+                                    <option value="Lats & Biceps">Lats & Biceps</option>
+                                    <option value="Deltoids & Core">Deltoids & Core</option>
+                                    <option value="Core & Abdominals">Core</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Exercise Name</th>
+                                            <th>Target Muscle Group</th>
+                                            <th>Equipment Needed</th>
+                                            <th>Difficulty</th>
+                                            <th>Description</th>
+                                            <th class="text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="exercisesTableBody">
+                                        <tr><td colspan="7" class="text-center">Loading exercises...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 7: FITNESS PROGRESS -->
+                <section class="tab-pane" id="pane-progress">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <select id="progressMemberSelect" class="form-control filter-select">
+                                <option value="">-- All Member Logs --</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-primary" id="openLogProgressModalBtn">
+                                <i class="fa-solid fa-ruler-combined"></i> Log Fitness Metrics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Chart for Selected Member -->
+                    <div class="card mb-4" id="memberProgressChartCard" style="display: none;">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-chart-line text-emerald"></i>
+                                <h3 id="progressChartTitle">Member Fitness Progression Timeline</h3>
+                            </div>
+                            <span class="badge badge-emerald">Weight & BMI Delta</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="canvas-wrap" style="height: 280px;">
+                                <canvas id="memberProgressionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Member</th>
+                                            <th>Date</th>
+                                            <th>Weight</th>
+                                            <th>Height</th>
+                                            <th>BMI (Auto-Trigger)</th>
+                                            <th>Body Fat %</th>
+                                            <th>Chest / Waist / Arms</th>
+                                            <th>Remarks</th>
+                                            <th class="text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="progressTableBody">
+                                        <tr><td colspan="10" class="text-center">Loading progress records...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 8: EQUIPMENT INVENTORY -->
+                <section class="tab-pane" id="pane-equipment">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <select id="equipConditionFilter" class="form-control filter-select">
+                                <option value="All">All Conditions</option>
+                                <option value="Operational">Operational</option>
+                                <option value="Maintenance Needed">Maintenance Needed</option>
+                                <option value="Under Repair">Under Repair</option>
+                                <option value="Decommissioned">Decommissioned</option>
+                            </select>
+                            <select id="equipCategoryFilter" class="form-control filter-select">
+                                <option value="All">All Categories</option>
+                                <option value="Cardio">Cardio</option>
+                                <option value="Strength">Strength</option>
+                                <option value="Free Weights">Free Weights</option>
+                                <option value="Functional">Functional</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-primary" id="openAddEquipmentModalBtn">
+                                <i class="fa-solid fa-plus"></i> Add Equipment Asset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Equipment Name</th>
+                                            <th>Category</th>
+                                            <th>Purchase Date</th>
+                                            <th>Condition Status</th>
+                                            <th>Last Maintenance</th>
+                                            <th>Asset Cost</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="equipmentTableBody">
+                                        <tr><td colspan="8" class="text-center">Loading equipment...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 9: PAYMENTS & BILLING -->
+                <section class="tab-pane" id="pane-payments">
+                    <div class="table-toolbar">
+                        <div class="toolbar-left">
+                            <select id="paymentStatusFilter" class="form-control filter-select">
+                                <option value="All">All Payment Statuses</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                            </select>
+                            <select id="paymentMethodFilter" class="form-control filter-select">
+                                <option value="All">All Methods</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Debit Card">Debit Card</option>
+                                <option value="Net Banking">Net Banking</option>
+                                <option value="Cash">Cash</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <button class="btn btn-primary" id="openRecordPaymentModalBtn">
+                                <i class="fa-solid fa-receipt"></i> Record Payment
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Transaction ID</th>
+                                            <th>Member</th>
+                                            <th>Plan</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Method</th>
+                                            <th>Status</th>
+                                            <th class="text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="paymentsTableBody">
+                                        <tr><td colspan="9" class="text-center">Loading payment records...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 10: ADVANCED REPORTS -->
+                <section class="tab-pane" id="pane-reports">
+                    <div class="reports-header mb-4">
+                        <div class="report-tabs-nav">
+                            <button class="report-tab-btn active" data-report="revenue">Monthly Revenue</button>
+                            <button class="report-tab-btn" data-report="trainers">Trainer Performance</button>
+                            <button class="report-tab-btn" data-report="popular-workouts">Popular Workouts</button>
+                            <button class="report-tab-btn" data-report="attendance-analytics">Attendance Analytics</button>
+                            <button class="report-tab-btn" data-report="pending-payments">Pending Invoices</button>
+                            <button class="report-tab-btn" data-report="progress-comparison">Fitness Progress Comparison</button>
+                            <button class="report-tab-btn" data-report="active-inactive">Active vs Inactive</button>
+                        </div>
+                    </div>
+
+                    <div id="reportContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </section>
+
+                <!-- TAB 11: DBMS SHOWCASE & SQL CONSOLE -->
+                <section class="tab-pane" id="pane-dbms-showcase">
+                    <div class="dbms-banner mb-4">
+                        <div class="dbms-banner-content">
+                            <span class="badge badge-emerald">Capstone Evaluation Special</span>
+                            <h2>Advanced Relational Database Concepts in Action</h2>
+                            <p>FitTrack demonstrates rigorous normalization (1NF, 2NF, 3NF), ACID transactions, Stored Procedures, Triggers, Views, CTEs, and Window Functions on MySQL 8.x.</p>
+                        </div>
+                        <div class="dbms-metrics">
+                            <div class="dbms-stat"><span>12</span> Tables (3NF)</div>
+                            <div class="dbms-stat"><span>6</span> Relational Views</div>
+                            <div class="dbms-stat"><span>4</span> Stored Procedures</div>
+                            <div class="dbms-stat"><span>4</span> Triggers</div>
+                            <div class="dbms-stat"><span>3</span> Functions (UDF)</div>
+                        </div>
+                    </div>
+
+                    <!-- Preset DBMS Query Selector -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-code text-cyan"></i>
+                                <h3>Interactive Concept Runner</h3>
+                            </div>
+                            <span class="text-muted text-sm">Select a concept to run on live MySQL</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="concept-buttons-grid">
+                                <button class="btn btn-secondary concept-btn active" data-concept="joins">
+                                    <i class="fa-solid fa-diagram-project"></i> Multi-Table Joins
+                                </button>
+                                <button class="btn btn-secondary concept-btn" data-concept="aggregates">
+                                    <i class="fa-solid fa-calculator"></i> Aggregates & HAVING
+                                </button>
+                                <button class="btn btn-secondary concept-btn" data-concept="subqueries">
+                                    <i class="fa-solid fa-filter"></i> Subqueries
+                                </button>
+                                <button class="btn btn-secondary concept-btn" data-concept="ctes">
+                                    <i class="fa-solid fa-layer-group"></i> CTEs & LAG Window
+                                </button>
+                                <button class="btn btn-secondary concept-btn" data-concept="ranking">
+                                    <i class="fa-solid fa-ranking-star"></i> DENSE_RANK & ROW_NUMBER
+                                </button>
+                                <button class="btn btn-secondary concept-btn" data-concept="udf">
+                                    <i class="fa-solid fa-gears"></i> User-Defined Functions
+                                </button>
+                            </div>
+
+                            <div class="sql-box-wrap mt-3">
+                                <div class="sql-box-header">
+                                    <span class="sql-box-title" id="sqlBoxTitle">Multi-Table Joins (INNER, LEFT, RIGHT)</span>
+                                    <button class="btn btn-sm btn-primary" id="runPresetSqlBtn">
+                                        <i class="fa-solid fa-play"></i> Execute SQL
+                                    </button>
+                                </div>
+                                <pre class="sql-code" id="sqlCodeDisplay"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Query Output Table -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-table text-emerald"></i>
+                                <h3>Query Results & Performance</h3>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="badge badge-emerald" id="sqlExecutionTime">0.00 ms</span>
+                                <span class="badge badge-cyan" id="sqlRowCount">0 rows</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
+                                <table class="data-table" id="sqlResultTable">
+                                    <thead id="sqlResultThead"></thead>
+                                    <tbody id="sqlResultTbody">
+                                        <tr><td class="text-center">Click "Execute SQL" to inspect live query output.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom SQL Terminal & Schema Inspector -->
+                    <div class="split-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-terminal text-purple"></i>
+                                    <h3>Custom SQL Read Terminal</h3>
+                                </div>
+                                <span class="badge badge-purple">SELECT / SHOW / WITH</span>
+                            </div>
+                            <div class="card-body">
+                                <textarea id="customSqlInput" class="form-control sql-input-box" rows="4" placeholder="SELECT * FROM members WHERE status = 'Active' LIMIT 5;"></textarea>
+                                <button class="btn btn-primary mt-3" id="executeCustomSqlBtn">
+                                    <i class="fa-solid fa-bolt"></i> Run Custom Query
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-network-wired text-amber"></i>
+                                    <h3>Schema Constraints Metadata</h3>
+                                </div>
+                                <span class="badge badge-amber">INFORMATION_SCHEMA</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="schema-tabs-wrap">
+                                    <div class="schema-list" id="schemaMetadataDisplay">
+                                        <!-- Populated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODALS -->
+    <!-- ========================================================================= -->
+
+    <!-- Modal 1: Register Member -->
+    <div class="modal-overlay" id="addMemberModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus text-emerald"></i> Register New Gym Member</h3>
+                <button class="modal-close" data-close="addMemberModal">&times;</button>
+            </div>
+            <form id="addMemberForm">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>First Name *</label>
+                            <input type="text" name="first_name" class="form-control" placeholder="e.g. Rahul" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Last Name *</label>
+                            <input type="text" name="last_name" class="form-control" placeholder="e.g. Verma" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Email Address *</label>
+                            <input type="email" name="email" class="form-control" placeholder="rahul@example.com" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Phone Number *</label>
+                            <input type="tel" name="phone" class="form-control" placeholder="+91 98765 00000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Gender *</label>
+                            <select name="gender" class="form-control" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Date of Birth *</label>
+                            <input type="date" name="dob" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Emergency Contact *</label>
+                            <input type="tel" name="emergency_contact" class="form-control" placeholder="+91 98111 22233" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Residential Address</label>
+                            <input type="text" name="address" class="form-control" placeholder="Street, City">
+                        </div>
+                    </div>
+
+                    <hr class="modal-divider">
+                    <h4 class="modal-section-title">Initial Membership Package (Atomic Stored Procedure)</h4>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Select Membership Plan</label>
+                            <select name="plan_id" id="registerMemberPlanSelect" class="form-control">
+                                <option value="">-- No Initial Plan --</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Payment Method</label>
+                            <select name="payment_method" class="form-control">
+                                <option value="UPI">UPI</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Debit Card">Debit Card</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Net Banking">Net Banking</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="addMemberModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Complete Registration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Member Deep Profile -->
+    <div class="modal-overlay" id="memberProfileModal">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-id-badge text-cyan"></i> Member Profile & Comprehensive Dossier</h3>
+                <button class="modal-close" data-close="memberProfileModal">&times;</button>
+            </div>
+            <div class="modal-body" id="memberProfileContent">
+                <!-- Loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-close="memberProfileModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add Trainer -->
+    <div class="modal-overlay" id="addTrainerModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-ninja text-cyan"></i> Add New Certified Trainer</h3>
+                <button class="modal-close" data-close="addTrainerModal">&times;</button>
+            </div>
+            <form id="addTrainerForm">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>First Name *</label>
+                            <input type="text" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Last Name *</label>
+                            <input type="text" name="last_name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Email *</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Phone *</label>
+                            <input type="tel" name="phone" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Specialization *</label>
+                            <input type="text" name="specialization" class="form-control" placeholder="e.g. Strength & Conditioning" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Experience (Years)</label>
+                            <input type="number" name="experience_years" class="form-control" min="0" value="3" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Hourly Rate (₹)</label>
+                            <input type="number" step="50" name="hourly_rate" class="form-control" value="600" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="addTrainerModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Trainer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Assign Trainer -->
+    <div class="modal-overlay" id="assignTrainerModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-link text-emerald"></i> Assign Trainer to Member</h3>
+                <button class="modal-close" data-close="assignTrainerModal">&times;</button>
+            </div>
+            <form id="assignTrainerForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Member *</label>
+                        <select name="member_id" id="assignModalMemberSelect" class="form-control" required>
+                            <option value="">-- Choose Member --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Trainer *</label>
+                        <select name="trainer_id" id="assignModalTrainerSelect" class="form-control" required>
+                            <option value="">-- Choose Trainer --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Preferred Session Time</label>
+                        <select name="session_time" class="form-control">
+                            <option value="Morning (06:30 - 07:30)">Morning (06:30 - 07:30)</option>
+                            <option value="Morning (07:30 - 08:30)">Morning (07:30 - 08:30)</option>
+                            <option value="Morning (08:30 - 09:30)">Morning (08:30 - 09:30)</option>
+                            <option value="Evening (17:00 - 18:00)">Evening (17:00 - 18:00)</option>
+                            <option value="Evening (18:00 - 19:00)">Evening (18:00 - 19:00)</option>
+                            <option value="Evening (19:00 - 20:00)">Evening (19:00 - 20:00)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="assignTrainerModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: Create Membership Plan -->
+    <div class="modal-overlay" id="addPlanModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-plus text-emerald"></i> Create Membership Plan</h3>
+                <button class="modal-close" data-close="addPlanModal">&times;</button>
+            </div>
+            <form id="addPlanForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Plan Name *</label>
+                        <input type="text" name="plan_name" class="form-control" placeholder="e.g. Diamond VIP" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Duration (Months) *</label>
+                            <input type="number" name="duration_months" class="form-control" min="1" value="3" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Fee (₹) *</label>
+                            <input type="number" step="50" name="fee" class="form-control" value="4500" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description & Inclusions</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Facilities, perks, classes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="addPlanModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 6: Renew Membership -->
+    <div class="modal-overlay" id="renewModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-arrows-rotate text-emerald"></i> Renew Membership (Stored Procedure)</h3>
+                <button class="modal-close" data-close="renewModal">&times;</button>
+            </div>
+            <form id="renewMembershipForm">
+                <div class="modal-body">
+                    <p class="text-muted text-sm mb-3">Executes <code>sp_renew_membership</code> with transaction management to extend active date or restart from today.</p>
+                    <div class="form-group">
+                        <label>Member *</label>
+                        <select name="member_id" id="renewMemberSelect" class="form-control" required>
+                            <option value="">-- Choose Member --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Renewing Plan *</label>
+                        <select name="plan_id" id="renewPlanSelect" class="form-control" required>
+                            <option value="">-- Choose Plan --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method *</label>
+                        <select name="payment_method" class="form-control" required>
+                            <option value="UPI">UPI</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Debit Card">Debit Card</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Net Banking">Net Banking</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="renewModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Execute Renewal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 7: Log Fitness Progress -->
+    <div class="modal-overlay" id="logProgressModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-ruler-combined text-emerald"></i> Log Fitness Metrics</h3>
+                <button class="modal-close" data-close="logProgressModal">&times;</button>
+            </div>
+            <form id="logProgressForm">
+                <div class="modal-body">
+                    <p class="text-muted text-sm mb-3"><code>trg_before_insert_fitness_progress</code> will automatically calculate and store the exact BMI value.</p>
+                    <div class="form-group">
+                        <label>Member *</label>
+                        <select name="member_id" id="progressModalMemberSelect" class="form-control" required>
+                            <option value="">-- Select Member --</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Recorded Date *</label>
+                            <input type="date" name="recorded_date" id="progressDateInput" class="form-control" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Body Fat %</label>
+                            <input type="number" step="0.1" name="body_fat_percentage" class="form-control" placeholder="e.g. 18.5">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Weight (kg) *</label>
+                            <input type="number" step="0.1" name="weight_kg" class="form-control" placeholder="75.0" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Height (cm) *</label>
+                            <input type="number" step="0.5" name="height_cm" class="form-control" placeholder="175.0" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Chest (cm)</label>
+                            <input type="number" step="0.5" name="chest_cm" class="form-control" placeholder="100.0">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Waist (cm)</label>
+                            <input type="number" step="0.5" name="waist_cm" class="form-control" placeholder="82.0">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Arms (cm)</label>
+                            <input type="number" step="0.5" name="arms_cm" class="form-control" placeholder="36.0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Trainer Notes / Assessment Remarks</label>
+                        <textarea name="remarks" class="form-control" rows="2" placeholder="Form feedback, milestone achievements..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="logProgressModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Biometrics</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 8: Add Exercise -->
+    <div class="modal-overlay" id="addExerciseModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-dumbbell text-emerald"></i> Add New Exercise</h3>
+                <button class="modal-close" data-close="addExerciseModal">&times;</button>
+            </div>
+            <form id="addExerciseForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Exercise Name *</label>
+                        <input type="text" name="exercise_name" class="form-control" placeholder="e.g. Incline Dumbbell Curl" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Target Muscle Group *</label>
+                            <input type="text" name="muscle_group" class="form-control" placeholder="e.g. Biceps Brachii" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Equipment Needed</label>
+                            <input type="text" name="equipment_needed" class="form-control" placeholder="e.g. Dumbbells & Incline Bench" value="Bodyweight">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Difficulty Level</label>
+                        <select name="difficulty_level" class="form-control">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description & Execution Guide</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="addExerciseModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Exercise</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 9: Add Equipment -->
+    <div class="modal-overlay" id="addEquipmentModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-weight-hanging text-amber"></i> Add Gym Equipment Asset</h3>
+                <button class="modal-close" data-close="addEquipmentModal">&times;</button>
+            </div>
+            <form id="addEquipmentForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Equipment Name *</label>
+                        <input type="text" name="equipment_name" class="form-control" placeholder="e.g. Leg Curl Machine" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Category *</label>
+                            <select name="category" class="form-control" required>
+                                <option value="Cardio">Cardio</option>
+                                <option value="Strength">Strength</option>
+                                <option value="Free Weights">Free Weights</option>
+                                <option value="Functional">Functional</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Condition Status *</label>
+                            <select name="condition_status" class="form-control" required>
+                                <option value="Operational">Operational</option>
+                                <option value="Maintenance Needed">Maintenance Needed</option>
+                                <option value="Under Repair">Under Repair</option>
+                                <option value="Decommissioned">Decommissioned</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Purchase Date *</label>
+                            <input type="date" name="purchase_date" class="form-control" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Asset Cost (₹)</label>
+                            <input type="number" step="1000" name="cost" class="form-control" value="50000" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="addEquipmentModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Equipment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 10: Create Workout Plan -->
+    <div class="modal-overlay" id="createWorkoutPlanModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-heart-pulse text-emerald"></i> Create Workout Routine Plan</h3>
+                <button class="modal-close" data-close="createWorkoutPlanModal">&times;</button>
+            </div>
+            <form id="createWorkoutPlanForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Plan Name *</label>
+                        <input type="text" name="plan_name" class="form-control" placeholder="e.g. 6-Week Functional Kettlebell Core" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Fitness Goal *</label>
+                            <select name="goal" class="form-control" required>
+                                <option value="Weight Loss">Weight Loss</option>
+                                <option value="Muscle Gain">Muscle Gain</option>
+                                <option value="Endurance">Endurance</option>
+                                <option value="General Fitness">General Fitness</option>
+                                <option value="Flexibility">Flexibility</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Difficulty Level</label>
+                            <select name="difficulty_level" class="form-control">
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Duration (Weeks) *</label>
+                            <input type="number" name="duration_weeks" class="form-control" min="1" value="6" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Authoring Trainer</label>
+                            <select name="trainer_id" id="workoutPlanTrainerSelect" class="form-control">
+                                <option value="">-- Gym Default / Core --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Plan Description & Periodization Notes</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Overview of split cycles, rest days, and targets..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="createWorkoutPlanModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Workout Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 11: Manual Attendance Log -->
+    <div class="modal-overlay" id="manualAttendanceModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clipboard-user text-purple"></i> Log Manual Attendance Record</h3>
+                <button class="modal-close" data-close="manualAttendanceModal">&times;</button>
+            </div>
+            <form id="manualAttendanceForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Member *</label>
+                        <select name="member_id" id="manualAttendanceMemberSelect" class="form-control" required>
+                            <option value="">-- Choose Member --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" name="attendance_date" id="manualAttendanceDateInput" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label>Check-in Time *</label>
+                            <input type="time" name="check_in_time" class="form-control" value="07:00" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label>Check-out Time</label>
+                            <input type="time" name="check_out_time" class="form-control" value="08:30">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="manualAttendanceModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
